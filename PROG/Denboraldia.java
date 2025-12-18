@@ -9,7 +9,7 @@ public class Denboraldia {
 	    private Date denboraldiHasiera;
 	    private Date denboraldiAmaiera;
 	    private boolean hasita;
-	    private Boolean amaituta;
+	    private boolean amaituta;
 
 	    // Konstruktore osoa
 	    public Denboraldia(int denboraldiID, int denboraldiUrtea, Date denboraldiHasiera, Date denboraldiAmaiera, boolean hasita, Boolean amaituta) {
