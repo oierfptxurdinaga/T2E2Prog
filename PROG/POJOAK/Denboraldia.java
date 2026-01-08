@@ -21,10 +21,6 @@ public class Denboraldia {
 	        this.amaituta = amaituta;
 	    }
 
-	    // Constructor vacío
-	    public Denboraldia() {
-	    }
-
 	    // Getters y Setters
 	    public int getDenboraldiID() {
 	        return denboraldiID;
