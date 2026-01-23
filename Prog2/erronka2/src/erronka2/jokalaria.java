@@ -2,6 +2,11 @@ package erronka2;
 
 import java.io.Serializable;
 
+/**
+ * Taldeko jokalari bat irudikatzen du.
+ * Datu pertsonalak, estatistikoak (dortsala) eta harremanetarako datuak barne hartzen ditu.
+ * Balio nuluak kudeatzen ditu setter-etan errorea saihesteko.
+ */
 class Jokalaria implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -19,6 +24,9 @@ class Jokalaria implements Serializable {
     private String posizioa;
     private String jaiotzeData;
 
+    /**
+     * Eraikitzaile hutsa. String eremuak kate hutsekin eta zenbakiak 0rekin hasieratzen ditu.
+     */
     public Jokalaria() {
         this.nombre = "";
         this.apellido = "";
@@ -33,6 +41,14 @@ class Jokalaria implements Serializable {
         this.jaiotzeData = "";
     }
 
+    /**
+     * Oinarrizko eraikitzailea.
+     * @param nombre Jokalariaren izena.
+     * @param apellido Abizena.
+     * @param edad Adina.
+     * @param nacionalidad Nazionalitatea.
+     * @param dorsal Dortsala (kamiseta zenbakia).
+     */
     public Jokalaria(String nombre, String apellido, int edad, String nacionalidad, int dorsal) {
         this.nombre = nombre;
         this.apellido = apellido;
@@ -47,7 +63,19 @@ class Jokalaria implements Serializable {
         this.jaiotzeData = "";
     }
 
-    // eraikin berria barne eremu gehiagorekin
+    /**
+     * Eraikitzaile osoa UI eremu hedatuekin.
+     * Balio nuluak kontrolatzen ditu kate hutsak esleituz.
+     * * @param nombre Izena.
+     * @param apellido Abizena.
+     * @param edad Adina.
+     * @param nacionalidad Nazionalitatea.
+     * @param dorsal Dortsala.
+     * @param nana Nortasun agiria (NAN).
+     * @param helbidea Helbidea.
+     * @param tlfn Telefonoa.
+     * @param taldea Taldearen izena.
+     */
     public Jokalaria(String nombre, String apellido, int edad, String nacionalidad, int dorsal, String nana, String helbidea, String tlfn, String taldea) {
         this.nombre = nombre;
         this.apellido = apellido;
@@ -64,9 +92,19 @@ class Jokalaria implements Serializable {
 
     // Posizioa eta jaiotze data getters/setters
     public String getPosizioa() { return posizioa; }
+    
+    /**
+     * Posizioa ezartzen du. Null bada, "" esleitzen da.
+     * @param posizioa Zelaiko posizioa.
+     */
     public void setPosizioa(String posizioa) { this.posizioa = posizioa == null ? "" : posizioa; }
 
     public String getJaiotzeData() { return jaiotzeData; }
+    
+    /**
+     * Jaiotze data ezartzen du. Null bada, "" esleitzen da.
+     * @param jaiotzeData Data String formatuan.
+     */
     public void setJaiotzeData(String jaiotzeData) { this.jaiotzeData = jaiotzeData == null ? "" : jaiotzeData; }
 
     // Beste getters/setters kodearen gainerako atalak erabiltzen ditu

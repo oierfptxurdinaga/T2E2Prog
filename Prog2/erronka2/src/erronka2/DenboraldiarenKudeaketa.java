@@ -2,8 +2,17 @@ package erronka2;
 
 import java.io.*;
 import java.util.*;
-import javax.swing.*;
 
+/**
+ * Denboraldien egoerak (hasita/amaituta) kudeatzeko klasea.
+ * 
+ * Proiektu honetako erabilerak metodo estatikoen bidez egiten dira:
+ * - isStarted / isFinalized
+ * - setStarted / setFinalized
+ * 
+ * DB eskuragarri badago, GUIren_metodoak-en bidez gordetzen saiatzen da.
+ * Bestela, season_states.ser fitxategian gordetzen du (fallback).
+ */
 public class DenboraldiarenKudeaketa implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String FILENAME = "season_states.ser";
@@ -19,14 +28,13 @@ public class DenboraldiarenKudeaketa implements Serializable {
         public void setFinalized(boolean f) { this.finalized = f; }
     }
 
-    private Map<String, SeasonState> map = new HashMap<>();
-
-    private static DenboraldiarenKudeaketa INSTANCE = load();
+    private final Map<String, SeasonState> map = new HashMap<>();
+    private static final DenboraldiarenKudeaketa INSTANCE = load();
 
     private DenboraldiarenKudeaketa() {}
 
     private static DenboraldiarenKudeaketa load() {
-        // Try DB first via GUIren_metodoak helper; if DB unreachable return null
+        // DB first
         try {
             Map<String, boolean[]> db = GUIren_metodoak.loadAllSeasonStatesFromDB(null);
             if (db != null) {
@@ -34,50 +42,50 @@ public class DenboraldiarenKudeaketa implements Serializable {
                 for (Map.Entry<String, boolean[]> e : db.entrySet()) {
                     SeasonState s = new SeasonState();
                     boolean[] v = e.getValue();
-                    s.setStarted(v != null && v.length > 0 ? v[0] : false);
-                    s.setFinalized(v != null && v.length > 1 ? v[1] : false);
+                    s.setStarted(v != null && v.length > 0 && v[0]);
+                    s.setFinalized(v != null && v.length > 1 && v[1]);
                     mgr.map.put(e.getKey() == null ? "" : e.getKey(), s);
                 }
                 return mgr;
             }
         } catch (Throwable ignored) {
-            // fall back to file-based
+            // fallback
         }
 
-        // Fallback to file-based loading (legacy)
+        // file fallback
         File f = new File(System.getProperty("user.dir"), FILENAME);
         if (f.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
                 Object obj = ois.readObject();
                 if (obj instanceof DenboraldiarenKudeaketa) return (DenboraldiarenKudeaketa) obj;
-            } catch (Exception e) {
-                // ignore and return new manager
+            } catch (Exception ignored) {
+                // ignore
             }
         }
         return new DenboraldiarenKudeaketa();
     }
 
-    private synchronized void save() {
-        // Attempt DB save for all entries first; if DB unavailable, persist to file as fallback
-        boolean anyDb = true;
+    private synchronized void saveToFile() {
+        File f = new File(System.getProperty("user.dir"), FILENAME);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
+            oos.writeObject(this);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private synchronized void saveAllToDbOrFile() {
+        boolean okAll = true;
         try {
             for (Map.Entry<String, SeasonState> e : map.entrySet()) {
                 String season = e.getKey();
                 SeasonState s = e.getValue();
                 boolean ok = GUIren_metodoak.saveSeasonStateToDB(null, season, s.isStarted(), s.isFinalized());
-                if (!ok) { anyDb = false; break; }
+                if (!ok) { okAll = false; break; }
             }
-        } catch (Throwable t) { anyDb = false; }
-
-        if (anyDb) return; // saved to DB
-
-        // fallback: write to file
-        File f = new File(System.getProperty("user.dir"), FILENAME);
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
-            oos.writeObject(this);
-        } catch (Exception e) {
-            // ignore
+        } catch (Throwable t) {
+            okAll = false;
         }
+        if (!okAll) saveToFile();
     }
 
     public static synchronized SeasonState getStateFor(String season) {
@@ -101,15 +109,20 @@ public class DenboraldiarenKudeaketa implements Serializable {
     public static synchronized void setStarted(String season, boolean v) {
         SeasonState s = getStateFor(season);
         s.setStarted(v);
-        // try saving only this season to DB; if fails, persist whole manager to file
-        boolean ok = GUIren_metodoak.saveSeasonStateToDB(null, season, s.isStarted(), s.isFinalized());
-        if (!ok) INSTANCE.save();
+        boolean ok = false;
+        try {
+            ok = GUIren_metodoak.saveSeasonStateToDB(null, season, s.isStarted(), s.isFinalized());
+        } catch (Throwable ignored) {}
+        if (!ok) INSTANCE.saveAllToDbOrFile();
     }
 
     public static synchronized void setFinalized(String season, boolean v) {
         SeasonState s = getStateFor(season);
         s.setFinalized(v);
-        boolean ok = GUIren_metodoak.saveSeasonStateToDB(null, season, s.isStarted(), s.isFinalized());
-        if (!ok) INSTANCE.save();
+        boolean ok = false;
+        try {
+            ok = GUIren_metodoak.saveSeasonStateToDB(null, season, s.isStarted(), s.isFinalized());
+        } catch (Throwable ignored) {}
+        if (!ok) INSTANCE.saveAllToDbOrFile();
     }
 }

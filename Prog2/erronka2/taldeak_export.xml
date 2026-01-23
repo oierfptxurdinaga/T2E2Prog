@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<eskubaloi_liga denboraldia="2025-2026" sorrera_data="2026-01-20 12:34:34">
+    <taldeak kopurua="3">
+        <taldea izena="Bidasoa Irun">
+            <informazioa>
+                <izena>Bidasoa Irun</izena>
+                <jokalari_kopurua>3</jokalari_kopurua>
+            </informazioa>
+            <jokalariak>
+                <jokalaria dortsala="7">
+                    <datu_pertsonalak>
+                        <nana>12345678A</nana>
+                        <izena>Mikel</izena>
+                        <abizena>Aguirre</abizena>
+                        <adina>28</adina>
+                        <jaiotze_data>1998-03-15</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Irun Kalea 1</helbidea>
+                        <telefonoa>943123456</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>7</dortsala>
+                        <posizioa>Atezaina</posizioa>
+                        <taldea>Bidasoa Irun</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+                <jokalaria dortsala="11">
+                    <datu_pertsonalak>
+                        <nana>23456789B</nana>
+                        <izena>Ander</izena>
+                        <abizena>Etxeberria</abizena>
+                        <adina>25</adina>
+                        <jaiotze_data>2001-07-22</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Hondarribia Etorb. 5</helbidea>
+                        <telefonoa>943234567</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>11</dortsala>
+                        <posizioa>Ezker muturreko</posizioa>
+                        <taldea>Bidasoa Irun</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+                <jokalaria dortsala="3">
+                    <datu_pertsonalak>
+                        <nana>34567890C</nana>
+                        <izena>Jon</izena>
+                        <abizena>Zabaleta</abizena>
+                        <adina>30</adina>
+                        <jaiotze_data>1996-11-08</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Behobia Kalea 12</helbidea>
+                        <telefonoa>943345678</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>3</dortsala>
+                        <posizioa>Erdiko ertzekoa</posizioa>
+                        <taldea>Bidasoa Irun</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+            </jokalariak>
+        </taldea>
+        <taldea izena="Anaitasuna">
+            <informazioa>
+                <izena>Anaitasuna</izena>
+                <jokalari_kopurua>2</jokalari_kopurua>
+            </informazioa>
+            <jokalariak>
+                <jokalaria dortsala="9">
+                    <datu_pertsonalak>
+                        <nana>45678901D</nana>
+                        <izena>Patxi</izena>
+                        <abizena>Iriarte</abizena>
+                        <adina>27</adina>
+                        <jaiotze_data>1999-05-30</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Iruñea Plaza 8</helbidea>
+                        <telefonoa>948456789</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>9</dortsala>
+                        <posizioa>Eskuin muturreko</posizioa>
+                        <taldea>Anaitasuna</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+                <jokalaria dortsala="15">
+                    <datu_pertsonalak>
+                        <nana>56789012E</nana>
+                        <izena>Xabier</izena>
+                        <abizena>Mendoza</abizena>
+                        <adina>23</adina>
+                        <jaiotze_data>2003-02-14</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Txantrea Kalea 3</helbidea>
+                        <telefonoa>948567890</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>15</dortsala>
+                        <posizioa>Pibot</posizioa>
+                        <taldea>Anaitasuna</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+            </jokalariak>
+        </taldea>
+        <taldea izena="BM Granollers">
+            <informazioa>
+                <izena>BM Granollers</izena>
+                <jokalari_kopurua>3</jokalari_kopurua>
+            </informazioa>
+            <jokalariak>
+                <jokalaria dortsala="21">
+                    <datu_pertsonalak>
+                        <nana>67890123F</nana>
+                        <izena>Marc</izena>
+                        <abizena>Fernandez</abizena>
+                        <adina>26</adina>
+                        <jaiotze_data>2000-09-18</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Carrer Major 10</helbidea>
+                        <telefonoa>938678901</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>21</dortsala>
+                        <posizioa>Erdiko erdikoa</posizioa>
+                        <taldea>BM Granollers</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+                <jokalaria dortsala="5">
+                    <datu_pertsonalak>
+                        <nana>78901234G</nana>
+                        <izena>Pol</izena>
+                        <abizena>Garcia</abizena>
+                        <adina>24</adina>
+                        <jaiotze_data>2002-12-03</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Avinguda Catalunya 22</helbidea>
+                        <telefonoa>938789012</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>5</dortsala>
+                        <posizioa>Ezker erdikoa</posizioa>
+                        <taldea>BM Granollers</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+                <jokalaria dortsala="13">
+                    <datu_pertsonalak>
+                        <nana>89012345H</nana>
+                        <izena>David</izena>
+                        <abizena>Martinez</abizena>
+                        <adina>29</adina>
+                        <jaiotze_data>1997-04-25</jaiotze_data>
+                        <nazionalitatea>Espainia</nazionalitatea>
+                    </datu_pertsonalak>
+                    <kontaktu_datuak>
+                        <helbidea>Plaça Porxada 6</helbidea>
+                        <telefonoa>938890123</telefonoa>
+                    </kontaktu_datuak>
+                    <kirol_datuak>
+                        <dortsala>13</dortsala>
+                        <posizioa>Atezaina</posizioa>
+                        <taldea>BM Granollers</taldea>
+                    </kirol_datuak>
+                </jokalaria>
+            </jokalariak>
+        </taldea>
+    </taldeak>
+    <estatistikak>
+        <talde_totala>3</talde_totala>
+        <jokalari_totala>8</jokalari_totala>
+    </estatistikak>
+</eskubaloi_liga>

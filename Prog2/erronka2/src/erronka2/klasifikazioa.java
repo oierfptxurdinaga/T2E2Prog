@@ -1,6 +1,14 @@
 package erronka2;
 
-public class klasifikazioa {
+import java.io.Serializable;
+
+/**
+ * Talde baten sailkapen-taulako errenkada irudikatzen du.
+ * Puntuak, golak eta jokatutako partidak bezalako estatistikak gordetzen ditu.
+ */
+public class klasifikazioa implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private int posizioa;
 	private String taldeIzena;
@@ -13,7 +21,19 @@ public class klasifikazioa {
 	private int kg; // Kontrako Golak
 	private int gd; // Gol Diferentzia
 
-	// Kontruktore osoa
+	/**
+	 * Estatistika guztiekin eraikitzaile osoa.
+	 * * @param posizioa Sailkapeneko posizioa.
+	 * @param taldeIzena Taldearen izena.
+	 * @param puntuak Puntu totalak.
+	 * @param jp Jokatutako partidak.
+	 * @param ip Irabazitako partidak.
+	 * @param gp Galdutako partidak.
+	 * @param bp Berdindutako partidak.
+	 * @param ag Aldeko golak.
+	 * @param kg Kontrako golak.
+	 * @param gd Golen diferentzia.
+	 */
 	public klasifikazioa(int posizioa, String taldeIzena, int puntuak, int jp, int ip, int gp, int bp, int ag, int kg,
 			int gd) {
 		this.posizioa = posizioa;
@@ -29,6 +49,8 @@ public class klasifikazioa {
 	}
 
 	// Getters y Setters
+	
+	/** @return Ligako uneko posizioa. */
 	public int getPosizioa() {
 		return posizioa;
 	}
@@ -37,6 +59,7 @@ public class klasifikazioa {
 		this.posizioa = posizioa;
 	}
 
+	/** @return Taldearen izena. */
 	public String getTaldeIzena() {
 		return taldeIzena;
 	}
@@ -45,6 +68,7 @@ public class klasifikazioa {
 		this.taldeIzena = taldeIzena;
 	}
 
+	/** @return Metatutako puntuak. */
 	public int getPuntuak() {
 		return puntuak;
 	}
@@ -53,6 +77,7 @@ public class klasifikazioa {
 		this.puntuak = puntuak;
 	}
 
+	/** @return Jokatutako partidak. */
 	public int getJp() {
 		return jp;
 	}
@@ -61,6 +86,7 @@ public class klasifikazioa {
 		this.jp = jp;
 	}
 
+	/** @return Irabazitako partidak. */
 	public int getIp() {
 		return ip;
 	}
@@ -69,6 +95,7 @@ public class klasifikazioa {
 		this.ip = ip;
 	}
 
+	/** @return Galdutako partidak. */
 	public int getGp() {
 		return gp;
 	}
@@ -77,6 +104,7 @@ public class klasifikazioa {
 		this.gp = gp;
 	}
 
+	/** @return Berdindutako partidak. */
 	public int getBp() {
 		return bp;
 	}
@@ -85,6 +113,7 @@ public class klasifikazioa {
 		this.bp = bp;
 	}
 
+	/** @return Aldeko golak. */
 	public int getAg() {
 		return ag;
 	}
@@ -93,6 +122,7 @@ public class klasifikazioa {
 		this.ag = ag;
 	}
 
+	/** @return Kontrako golak. */
 	public int getKg() {
 		return kg;
 	}
@@ -101,6 +131,7 @@ public class klasifikazioa {
 		this.kg = kg;
 	}
 
+	/** @return Golen diferentzia. */
 	public int getGd() {
 		return gd;
 	}

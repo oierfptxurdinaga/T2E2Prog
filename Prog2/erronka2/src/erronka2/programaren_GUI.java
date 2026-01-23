@@ -80,30 +80,37 @@ public class programaren_GUI extends JFrame {
             String password = new String(passwordField.getPassword());
 
             if (selected.equals("Erabiltzailea")) {
+                Logger.login("Erabiltzailea");
                 openUserWindow();
                 dispose();
             } else if (selected.equals("Koordinatzailea")) {
                 if (password.equals("admin")) {
+                    Logger.login("Koordinatzailea");
                     openAdminWindow();
                     dispose();
                 } else {
+                    Logger.warning("Koordinatzailea saioa hasi saiakera okerra - pasahitz okerra");
                     JOptionPane.showMessageDialog(this, "Pasahitza okerra");
                 }
             } else if (selected.equals("Arbitroa")) {
                 if (password.equals("arbitroa1234")) {
+                    Logger.login("Arbitroa");
                     openArbitroWindow();
                     dispose();
                 } else {
+                    Logger.warning("Arbitroa saioa hasi saiakera okerra - pasahitz okerra");
                     JOptionPane.showMessageDialog(this, "Pasahitza okerra");
                 }
             }
         });
 
         setVisible(true);
+        Logger.info("Aplikazioa abiarazita - Saio hasierako leihoa irekita");
     }
 
     // ------------------ ERABILTZAILEA IREKI ------------------
     private void openUserWindow() {
+        Logger.leihoaIrekita("Erabiltzailea");
         JFrame userFrame = new JFrame("Erabiltzailea");
         userFrame.setSize(400, 300);
         userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -144,6 +151,7 @@ public class programaren_GUI extends JFrame {
 
     // ------------------ ADMINISTRATZAILEA IREKI ------------------
     private void openAdminWindow() {
+        Logger.leihoaIrekita("Koordinatzailea");
         JFrame adminFrame = new JFrame("Koordinatzailea");
         adminFrame.setSize(450, 350);
         adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -175,6 +183,7 @@ public class programaren_GUI extends JFrame {
 
         JButton button3 = new JButton("KUDEATU KLASIFIKASIOA");
         button3.setBounds(75, 180, 300, 50);
+        button3.addActionListener(e -> openKudeatuKlasifikazioaWindow());
         panel.add(button3);
 
         adminFrame.add(panel);
@@ -183,6 +192,7 @@ public class programaren_GUI extends JFrame {
 
     // ------------------ ARBITROA IREKI ------------------
     private void openArbitroWindow() {
+        Logger.leihoaIrekita("Arbitroa");
         JFrame arbitroFrame = new JFrame("Arbitroa");
         arbitroFrame.setSize(400, 300);
         arbitroFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -245,6 +255,7 @@ public class programaren_GUI extends JFrame {
 
     // ------------------ TALDEAK IKUSKERA ------------------
     private void openTaldeakWindow() {
+        Logger.leihoaIrekita("Taldeak");
         JFrame frame = new JFrame("Taldeak");
         frame.setSize(700, 400);
         frame.setLocationRelativeTo(null);
@@ -393,6 +404,7 @@ public class programaren_GUI extends JFrame {
 
     // ------------------ JAURDUNALDIAK IKUSKERA ------------------
     private void openJaurdunaldiakWindow() {
+        Logger.leihoaIrekita("Jaurdunaldiak");
         JFrame frame = new JFrame("Jaurdunaldiak");
         frame.setSize(900, 450);
         frame.setLocationRelativeTo(null);
@@ -511,6 +523,7 @@ public class programaren_GUI extends JFrame {
 
     // ------------------ JAURDUNALDIAK KUDEATU (ADMIN) ------------------
     private void openKudeatuJaurdunaldiakWindow() {
+        Logger.leihoaIrekita("Kudeatu Jaurdunaldiak");
         JFrame frame = new JFrame("KUDEATU JAURDUNALDIAK");
         frame.setSize(950, 500);
         frame.setLocationRelativeTo(null);
@@ -629,6 +642,7 @@ public class programaren_GUI extends JFrame {
             // Denboraldia amaituta badago, ezin da editatu
             String season = (String) comboSeasons.getSelectedItem();
             if (DenboraldiarenKudeaketa.isFinalized(season)) {
+                Logger.warning("Partidua editatzeko saiakera blokeatu - denboraldia amaituta: " + season);
                 JOptionPane.showMessageDialog(frame, "Denboraldia amaituta dago. Partiduen emaitzak ezin dira aldatu.");
                 return;
             }
@@ -681,9 +695,7 @@ public class programaren_GUI extends JFrame {
                     if (newRow[c] != null) model.setValueAt(newRow[c], sel, c);
                 }
 
-                // Do NOT recalculate sailkapena automatically based on match results anymore.
-                // Previously the code called GUIren_metodoak.recalculateAndSaveSailkapena(frame, season);
-                // We keep only a simple confirmation message.
+                Logger.partiduaEditatua(season, originalRow, newRow);
                 JOptionPane.showMessageDialog(frame, "Partidua eguneratua.");
 
                 // refresh table and status
@@ -691,6 +703,7 @@ public class programaren_GUI extends JFrame {
                 try { updateSeasonStatus.run(); } catch (Exception ex) { /* ignore */ }
 
             } else {
+                Logger.error("Partidua eguneratu ezin izan da - " + season);
                 JOptionPane.showMessageDialog(frame, "Ezin izan da partidua eguneratu.", "Errorea", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -712,6 +725,7 @@ public class programaren_GUI extends JFrame {
 
     // ADMIN-ek jokalariak eta taldeak kudeatzeko leihoa
     private void openKudeatuJokalariakTaldeakWindow() {
+        Logger.leihoaIrekita("Kudeatu Jokalariak/Taldeak");
         JFrame frame = new JFrame("KUDEATU JOKALARIAK / TALDEAK");
         frame.setSize(800, 500);
         frame.setLocationRelativeTo(null);
@@ -801,9 +815,11 @@ public class programaren_GUI extends JFrame {
                         String season = (String) comboSeasons.getSelectedItem();
                         boolean saved = GUIren_metodoak.saveTaldeakToDB(frame, taldeak, season);
                         if (saved) {
+                            Logger.aldaketakGordeta("Jokalariak/Taldeak - Denboraldia: " + season);
                             JOptionPane.showMessageDialog(frame, "Aldaketak gordeta.");
                             frame.dispose();
                         } else {
+                            Logger.error("Aldaketak gordetzean errorea - Denboraldia: " + season);
                             JOptionPane.showMessageDialog(frame, "Ezin izan dira aldaketak gorde.", "Errorea", JOptionPane.ERROR_MESSAGE);
                         }
                     } else if (option == JOptionPane.NO_OPTION) {
@@ -886,7 +902,8 @@ public class programaren_GUI extends JFrame {
             j.setTaldea(team.getNombre());
 
             team.addJugador(j);
-            hasChanges[0] = true; // Marcar que hay cambios
+            Logger.jokalariaGehitua(team.getNombre(), j.getNombre(), j.getApellido());
+            hasChanges[0] = true;
             refreshTable.run();
         });
 
@@ -935,7 +952,8 @@ public class programaren_GUI extends JFrame {
             sel.setHelbidea(helbF.getText().trim());
             sel.setTlfn(tlfnF.getText().trim());
 
-            hasChanges[0] = true; // Marcar que hay cambios
+            Logger.jokalariaEditatua(team.getNombre(), sel.getNombre(), sel.getApellido());
+            hasChanges[0] = true;
             refreshTable.run();
         });
 
@@ -948,12 +966,15 @@ public class programaren_GUI extends JFrame {
             Jokalaria sel = team.getJugadores().get(r);
             int ok = JOptionPane.showConfirmDialog(frame, "Ziur zaude jokalaria ezabatu nahi duzula?", "Konfirmatu", JOptionPane.YES_NO_OPTION);
             if (ok != JOptionPane.YES_OPTION) return;
+            String izena = sel.getNombre();
+            String abizena = sel.getApellido();
+            String taldeIzena = team.getNombre();
             team.removeJugador(sel);
-            hasChanges[0] = true; // Marcar que hay cambios
+            Logger.jokalariaEzabatua(taldeIzena, izena, abizena);
+            hasChanges[0] = true;
             refreshTable.run();
         });
 
-        // Traspaso ekintza: hautatutako jokalaria beste taldera mugitzea (DB eguneraketa beharrezkoa)
         transferBtn.addActionListener(ae -> {
             int tIdx = comboEquipos.getSelectedIndex();
             int r = table.getSelectedRow();
@@ -989,9 +1010,12 @@ public class programaren_GUI extends JFrame {
 
             boolean dbOk = GUIren_metodoak.updateJokalariaTaldeaInDB(frame, nana, targetTeamName);
             if (!dbOk) {
+                Logger.error("Traspasoa ezin izan da egin - DB errorea");
                 return;
             }
 
+            String jokalariaIzena = sel.getNombre() + " " + sel.getApellido();
+            String jatorriakoTaldea = fromTeam.getNombre();
             fromTeam.removeJugador(sel);
             sel.setTaldea(targetTeamName);
             Taldea target = null;
@@ -999,6 +1023,7 @@ public class programaren_GUI extends JFrame {
             if (target == null) { target = new Taldea(targetTeamName); taldeak.add(target); comboEquipos.addItem(targetTeamName); }
             target.addJugador(sel);
 
+            Logger.jokalariaTraspasatua(jatorriakoTaldea, targetTeamName, jokalariaIzena);
             refreshTable.run();
             JOptionPane.showMessageDialog(frame, "Jokalariaren traspasoa eginda.");
         });
@@ -1015,7 +1040,170 @@ public class programaren_GUI extends JFrame {
         frame.setVisible(true);
     }
 
+    // ------------------ KLASIFIKASIOA KUDEATU (ADMIN) ------------------
+    private void openKudeatuKlasifikazioaWindow() {
+        Logger.leihoaIrekita("Kudeatu Klasifikazioa/Sailkapena");
+        JFrame frame = new JFrame("KUDEATU KLASIFIKASIOA");
+        frame.setSize(900, 500);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout(10, 10));
+        frame.getContentPane().setBackground(Color.decode("#990000"));
+
+        // GOI: denboraldi aukeragilea
+        JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
+        top.setBackground(Color.decode("#990000"));
+        JLabel lbl = new JLabel("Denboraldia:");
+        lbl.setForeground(Color.WHITE);
+        top.add(lbl);
+
+        JComboBox<String> comboSeasons = new JComboBox<>();
+        top.add(comboSeasons);
+        frame.add(top, BorderLayout.NORTH);
+
+        Runnable reloadSeasons = () -> SwingUtilities.invokeLater(() -> {
+            List<String> s = GUIren_metodoak.getAvailableSailkapenaSeasons(this);
+            if (s == null) s = new ArrayList<>();
+            Object prev = comboSeasons.getSelectedItem();
+            comboSeasons.removeAllItems();
+            if (s.isEmpty()) {
+                comboSeasons.addItem("2024-2025");
+                comboSeasons.addItem("2025-2026");
+            } else {
+                for (String v : s) comboSeasons.addItem(v);
+            }
+            if (prev != null) comboSeasons.setSelectedItem(prev);
+            if (comboSeasons.getItemCount() > 0 && comboSeasons.getSelectedItem() == null) comboSeasons.setSelectedIndex(0);
+        });
+        reloadSeasons.run();
+
+        // Taula (DB-tik kargatua)
+        final boolean[] editMode = new boolean[] { false };
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) {
+                return editMode[0];
+            }
+        };
+        JTable table = new JTable(model);
+        JScrollPane scroll = new JScrollPane(table);
+        aplicarEstiloTabla(table, scroll);
+        frame.add(scroll, BorderLayout.CENTER);
+
+        // Karga
+        Runnable loadForSeason = () -> {
+            String season = (String) comboSeasons.getSelectedItem();
+            if (season == null) return;
+            Object[] res = GUIren_metodoak.loadSailkapenaFromDB(this, season);
+            String[] cols = (res != null && res.length > 0 && res[0] instanceof String[]) ? (String[]) res[0] : new String[0];
+            Object[][] rows = (res != null && res.length > 1 && res[1] instanceof Object[][]) ? (Object[][]) res[1] : new Object[0][0];
+
+            SwingUtilities.invokeLater(() -> {
+                editMode[0] = false;
+                model.setRowCount(0);
+                model.setColumnCount(0);
+                if (cols.length == 0) {
+                    // show informative row if any
+                    model.addColumn("Info");
+                    model.addRow(new Object[] { "Ez da sailkapenik aurkitu." });
+                    return;
+                }
+                for (String c : cols) model.addColumn(c);
+                for (Object[] r : rows) model.addRow(r);
+            });
+        };
+
+        comboSeasons.addActionListener(e -> {
+            if (comboSeasons.getSelectedItem() == null) return;
+            loadForSeason.run();
+        });
+
+        // BEHE: botoiak
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
+        bottom.setBackground(Color.decode("#990000"));
+        JButton enableEditBtn = new JButton("Editatu taula (DB)");
+        JButton saveDbBtn = new JButton("Gorde DB-n");
+        JButton recalcBtn = new JButton("Birkalkulatu (partiduetatik) eta gorde");
+        JButton backBtn = new JButton("\u2B05");
+        bottom.add(enableEditBtn);
+        bottom.add(saveDbBtn);
+        bottom.add(recalcBtn);
+        bottom.add(backBtn);
+        frame.add(bottom, BorderLayout.SOUTH);
+
+        enableEditBtn.addActionListener(ae -> {
+            // allow editing only when there are real columns
+            if (model.getColumnCount() == 0 || (model.getColumnCount() == 1 && "Info".equalsIgnoreCase(String.valueOf(model.getColumnName(0))))) {
+                JOptionPane.showMessageDialog(frame, "Ez dago editatzeko sailkapen taularik.");
+                return;
+            }
+            editMode[0] = true;
+            table.setEnabled(true);
+            JOptionPane.showMessageDialog(frame, "Edit modua aktibatuta. Aldaketak egin eta gero 'Gorde DB-n' sakatu.");
+        });
+
+        saveDbBtn.addActionListener(ae -> {
+            if (!editMode[0]) {
+                JOptionPane.showMessageDialog(frame, "Lehenik 'Editatu taula (DB)' aktibatu.");
+                return;
+            }
+            String season = (String) comboSeasons.getSelectedItem();
+            if (season == null || season.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Aukeratu denboraldia lehenik.");
+                return;
+            }
+
+            // stop ongoing edits
+            if (table.isEditing()) {
+                try { table.getCellEditor().stopCellEditing(); } catch (Exception ignored) {}
+            }
+
+            int ok = JOptionPane.showConfirmDialog(frame,
+                    "Ziur zaude sailkapena DB-n gordetu nahi duzula?\nHonek taula osoa ordezkatu dezake.",
+                    "Konfirmatu", JOptionPane.YES_NO_OPTION);
+            if (ok != JOptionPane.YES_OPTION) return;
+
+            boolean saved = GUIren_metodoak.saveSailkapenaTableToDB(frame, season, model);
+            if (saved) {
+                editMode[0] = false;
+                JOptionPane.showMessageDialog(frame, "DB eguneratuta: " + season);
+                loadForSeason.run();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Ezin izan da DB eguneratu.", "Errorea", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        recalcBtn.addActionListener(ae -> {
+            String season = (String) comboSeasons.getSelectedItem();
+            if (season == null || season.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Aukeratu denboraldia lehenik.");
+                return;
+            }
+            int ok = JOptionPane.showConfirmDialog(frame,
+                    "Partiduetatik sailkapena birkalkulatu eta DB-n gorde nahi duzu?\nEskuzko aldaketak galdu daitezke.",
+                    "Konfirmatu", JOptionPane.YES_NO_OPTION);
+            if (ok != JOptionPane.YES_OPTION) return;
+
+            boolean done = GUIren_metodoak.recalculateAndSaveSailkapena(frame, season);
+            if (done) {
+                editMode[0] = false;
+                JOptionPane.showMessageDialog(frame, "Birkalkulatu eta DB-n gordeta: " + season);
+                reloadSeasons.run();
+                loadForSeason.run();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Ezin izan da birkalkulatu/gorde.", "Errorea", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        backBtn.addActionListener(ae -> frame.dispose());
+
+        // hasierako karga
+        loadForSeason.run();
+        frame.setVisible(true);
+    }
+
+    // ------------------ KLASIFIKASIOA ------------------
     private void openKlasifikazioaWindow() {
+        Logger.leihoaIrekita("Klasifikazioa/Sailkapena");
         JFrame frame = new JFrame("Klasifikazioa / Sailkapena");
         frame.setSize(800, 450);
         frame.setLocationRelativeTo(null);
@@ -1049,8 +1237,6 @@ public class programaren_GUI extends JFrame {
                 if (comboSeasons.getItemCount() > 0 && comboSeasons.getSelectedItem() == null) comboSeasons.setSelectedIndex(0);
             });
         };
-
-        // hasierako denboraldi karga
         reloadSeasons.run();
 
         frame.add(top, BorderLayout.NORTH);

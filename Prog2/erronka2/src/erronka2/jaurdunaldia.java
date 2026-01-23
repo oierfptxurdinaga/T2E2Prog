@@ -2,6 +2,10 @@ package erronka2;
 
 import java.util.Date;
 
+/**
+ * Txapelketaren barruko jardunaldi bat irudikatzen du.
+ * Partidaren data, taldeak eta egoerari buruzko informazioa gordetzen du.
+ */
 public class jaurdunaldia {
 
 	private int jaurdunaldiID;
@@ -10,7 +14,14 @@ public class jaurdunaldia {
 	private String kampokoTaldea;
 	private String egoera;
 
-	// Kontruktore osoa
+	/**
+	 * Jardunaldiaren eraikitzaile osoa.
+	 * * @param jaurdunaldiID Jardunaldiaren IDa.
+	 * @param data Partidaren data.
+	 * @param etxekoTaldea Etxeko taldearen izena.
+	 * @param kampokoTaldea Kanpoko taldearen izena.
+	 * @param egoera Jardunaldiaren/partidaren uneko egoera.
+	 */
 	public jaurdunaldia(int jaurdunaldiID, Date data, String etxekoTaldea, String kampokoTaldea, String egoera) {
 		this.jaurdunaldiID = jaurdunaldiID;
 		this.data = data;
@@ -20,6 +31,8 @@ public class jaurdunaldia {
 	}
 
 	// Getters eta Setters
+	
+	/** @return Jardunaldiaren IDa. */
 	public int getJaurdunaldiID() {
 		return jaurdunaldiID;
 	}
@@ -28,6 +41,7 @@ public class jaurdunaldia {
 		this.jaurdunaldiID = jaurdunaldiID;
 	}
 
+	/** @return Partidaren data. */
 	public Date getData() {
 		return data;
 	}
@@ -36,6 +50,7 @@ public class jaurdunaldia {
 		this.data = data;
 	}
 
+	/** @return Etxeko taldearen izena. */
 	public String getEtxekoTaldea() {
 		return etxekoTaldea;
 	}
@@ -44,6 +59,7 @@ public class jaurdunaldia {
 		this.etxekoTaldea = etxekoTaldea;
 	}
 
+	/** @return Kanpoko taldearen izena. */
 	public String getKampokoTaldea() {
 		return kampokoTaldea;
 	}
@@ -52,6 +68,7 @@ public class jaurdunaldia {
 		this.kampokoTaldea = kampokoTaldea;
 	}
 
+	/** @return Jardunaldiaren egoera. */
 	public String getEgoera() {
 		return egoera;
 	}

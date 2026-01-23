@@ -8,114 +8,172 @@ import java.net.Socket;
 import java.sql.*;
 import java.util.*;
 import java.util.function.BiConsumer;
-	
+import javax.swing.table.DefaultTableModel;
+
 public class GUIren_metodoak {
 
-	// KONEXIO DATUAK (Aldatu pasahitza behar izanez gero)
-	// Erabili 127.0.0.1 eta gehitu parametro arruntak timezone/SSL/public-key arazoak saihesteko
-	// Gehitu connectTimeout eta autoReconnect sare arazo txikiei aurre egiteko
+	// =========================================================================
+	// KONEXIO KONSTANTEAK - Datu-basera konektatzeko datuak
+	// =========================================================================
+	
 	private static final String URL = "jdbc:mysql://127.0.0.1:3306/eskubaloi?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=5000&autoReconnect=true";
+	
+	/** Datu-baseko erabiltzaile izena */
 	private static final String USER = "root";
+	
+	/** Datu-baseko pasahitza (hutsik defektuz) */
 	private static final String PASSWORD = "";
-	// DEBUG true egiteak stack trace osoa emango du, normalean itzali
+	
+	/**
+	 * DEBUG modua aktibatzeko/desaktibatzeko.
+	 * true: Stack trace osoak erakutsiko dira erroreen kasuan
+	 * false: Erroreak isiltasunean kudeatuko dira
+	 */
 	private static final boolean DEBUG = true;
 
-	// SQL saiakeren eta erroreen azken zerrenda memorian gordetzeko (GUI-rako erakusteko)
+	// =========================================================================
+	// SQL SAIAKERAREN ERREGISTROA - Diagnostikorako
+	// =========================================================================
+	
+	/**
+	 * Azken SQL saiakeraren zerrenda sinkronizatua.
+	 * GUI-rako erakusteko eta diagnostikorako erabiltzen da.
+	 * Gehienez 200 sarrera mantentzen ditu memorian.
+	 */
 	private static final List<String> lastSqlAttempts = Collections.synchronizedList(new ArrayList<>());
 
+	/**
+	 * SQL saiakera bat erregistratzen du diagnostiko helburuetarako.
+	 */
 	private static void recordSqlAttempt(String s) {
+		// Null balioak ez dira erregistratzen
 		if (s == null)
 			return;
 		try {
+			// Saiakera gehitu zerrendara
 			lastSqlAttempts.add(s);
-			// azken 200 sartzeak mantendu gehienez
+			// Gehienez 200 sarrera mantendu - zaharrenak ezabatu
 			if (lastSqlAttempts.size() > 200)
 				lastSqlAttempts.remove(0);
 		} catch (Exception ignored) {
+			// Edozein errore isiltasunean kudeatu
 		}
 	}
 
+	/**
+	 * Azken SQL saiakeren zerrenda lortu eta garbitu.
+	 * Metodo hau thread-safe da (sinkronizatua).
+	 */
 	public static List<String> drainLastSqlAttempts() {
 		List<String> copy;
 		synchronized (lastSqlAttempts) {
+			// Kopia bat sortu
 			copy = new ArrayList<>(lastSqlAttempts);
+			// Zerrenda originala garbitu
 			lastSqlAttempts.clear();
 		}
 		return copy;
 	}
 
-	// -------------------------------------------------------------------------
-	// TALDEAK KARGATZEKO (PERTSONA TAULAREKIN JOIN EGINEZ)
-	// -------------------------------------------------------------------------
-	private static volatile boolean dbNotified = false; // erabiltzaileari behin jakinarazteko
+	// =========================================================================
+	// DATU-BASE KONEXIO EGIAZTAPENA
+	// =========================================================================
+	
+	/**
+	 * Aldagai boolearra erabiltzaileari behin bakarrik jakinarazteko
+	 * datu-basea eskuraezin dagoenean.
+	 */
+	private static volatile boolean dbNotified = false;
 
 	private static boolean isDatabaseReachable() {
-		// JDBC URL-tik host:port atera eta TCP konektatzen saiatu denbora motzean
 		try {
 			String u = URL;
+			// "//" aurkitu URL-an (jdbc:mysql://...)
 			int p = u.indexOf("//");
 			if (p < 0)
-				return true; // parseatu ezin bada -> optimista
+				return true; // Ezin bada parseatu, optimista izan
+			
+			// Host:port zatia atera
 			String hostPort = u.substring(p + 2);
+			
+			// "/" aurkitu datu-base izenaren aurretik
 			int slash = hostPort.indexOf('/');
 			if (slash > 0)
 				hostPort = hostPort.substring(0, slash);
-			// parametroak kendu badaude
+			
+			// Query parametroak kendu (? ondoren)
 			int q = hostPort.indexOf('?');
 			if (q > 0)
 				hostPort = hostPort.substring(0, q);
+			
+			// Host eta port banatu
 			String host = hostPort;
-			int port = 3306;
+			int port = 3306; // MySQL defektuzko portua
+			
 			if (hostPort.contains(":")) {
 				String[] hp = hostPort.split(":");
 				host = hp[0];
 				try {
 					port = Integer.parseInt(hp[1]);
 				} catch (Exception ignored) {
+					// Defektuzko portua mantendu
 				}
 			}
+			
+			// TCP socket bidez konektatu saiatzen da
 			try (Socket s = new Socket()) {
+				// 1500ms timeout-arekin konektatu
 				s.connect(new InetSocketAddress(host, port), 1500);
-				return true;
+				return true; // Konexioa arrakastatsua
 			} catch (Exception ex) {
 				if (DEBUG)
 					System.out.println("DB reachability probe failed: " + ex.getMessage());
-				return false;
+				return false; // Ezin da konektatu
 			}
 		} catch (Exception ex) {
 			if (DEBUG)
 				ex.printStackTrace();
-			return true; // ez oztopatzeko
+			return true; // Erroreren kasuan, ez oztopatu
 		}
 	}
 
+	// -------------------------------------------------------------------------
+	// TALDEAK KARGATZEKO (PERTSONA TAULAREKIN JOIN EGINEZ)
+	// -------------------------------------------------------------------------
+	
+	/**
+	 * Taldeak datu-basitik kargatzen ditu, jokalaria eta pertsona taulekin JOIN eginez.
+	 * 
+	 * Metodo honek SQL kontsulta konplexu bat exekutatzen du:
+	 * - jokalaria taulatik: NANa, Dortsala, Posizioa, Jaiotze_data
+	 * - pertsona taulatik: Izen_abizena, Adina, Helbidea, Tlfn
+	 * - taldea taulatik: Izena (taldearen izena)
+	 * 
+	 * LEFT JOIN erabiltzen du, beraz jokalari guztiak itzuliko ditu
+	 * nahiz eta pertsona taulan ez egon.
+	 * 
+	 * Errorea gertatzen bada, .ser fitxategietatik kargatzen saiatuko da (fallback).
+	 */
 	public static List<Taldea> loadTaldeakFromDB(Component parent, String season) {
-		// DB ez badago eskuragarri, .ser fitxategietara egin fallback eta jakinarazi behin bakarrik
-		if (!isDatabaseReachable()) {
-			if (!dbNotified) {
-				dbNotified = true;
-				JOptionPane.showMessageDialog(parent,
-						"Cannot connect to database server at " + URL + ".\nUsing serialized files (.ser) as fallback.",
-						"DB Unreachable", JOptionPane.WARNING_MESSAGE);
-			}
-			List<Taldea> fromSer = loadTaldeakFromSer(parent, season);
-			return fromSer != null ? fromSer : new ArrayList<>();
-		}
-
+		// Emaitza gordetzeko zerrenda sortu
 		List<Taldea> listaTaldeak = new ArrayList<>();
 
-		// Driver kargatu eta ez badago, jakinarazi eta .ser erabilera egin
+		// JDBC Driver kargatu saiatu
+		// Driver-a ez badago classpath-ean, ClassNotFoundException jaurtiko du
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException cnfe) {
+			// Driver-a ez dago - erabiltzaileari jakinarazi eta fallback egin
 			String msg = "MySQL JDBC Driver ez da aurkitu. Gehitu mysql-connector-java.jar classpath-era.\n"
 				+ "Datuak fitxategi serializatuekin kargatuko dira fallback gisa.";
 			JOptionPane.showMessageDialog(parent, msg, "Driver JDBC ez aurkitu", JOptionPane.WARNING_MESSAGE);
+			// .ser fitxategietatik kargatu alternatiba gisa
 			List<Taldea> fromSer = loadTaldeakFromSer(parent, season);
 			return fromSer != null ? fromSer : new ArrayList<>();
 		}
 
-		// DB kontsulta
+		// SQL kontsulta konplexua - hiru taula elkartzen ditu
+		// COALESCE erabiltzen du: pertsona.Izen_abizena lehentasuna du, bestela jokalaria.Izen_abizena
 		String sql = "SELECT t.Izena AS NombreEquipo, " + "j.NANa AS NANa, "
 				+ "COALESCE(p.Izen_abizena, j.Izen_abizena) AS Izen_abizena, " + "p.Adina AS Adina, "
 				+ "p.Helbidea AS Helbidea, " + "p.Tlfn AS Tlfn, " + "j.Dortsala AS Dortsala, "
@@ -123,39 +181,52 @@ public class GUIren_metodoak {
 				+ "LEFT JOIN taldea t ON j.taldea = t.Izena " + "LEFT JOIN pertsona p ON j.NANa = p.NANa "
 				+ "ORDER BY t.Izena, j.Dortsala";
 
+		// Try-with-resources: konexioa, statement-a eta resultset-a automatikoki itxiko dira
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement stmt = conn.prepareStatement(sql);
 				ResultSet rs = stmt.executeQuery()) {
 
+			// Emaitza bakoitza prozesatu
 			while (rs.next()) {
+				// Taldearen izena lortu
 				String nombreEquipo = rs.getString("NombreEquipo");
 
-				// Taldea bilatu edo sortu
+				// Taldea bilatu zerrendan edo berria sortu
 				Taldea equipo = buscarOcrearTaldea(listaTaldeak, nombreEquipo == null ? "" : nombreEquipo);
 
-				// Jokalariaren datuak lortu
+				// Jokalariaren NANa lortu (identifikatzaile bakarra)
 				String nana = rs.getString("NANa");
+				
+				// Izen osoa lortu (izena + abizena)
 				String nombreCompleto = rs.getString("Izen_abizena");
+				
+				// Adina lortu - null bada 0 ezarri
 				int edad = 0;
 				try {
 					edad = rs.getInt("Adina");
-					if (rs.wasNull())
+					if (rs.wasNull()) // SQL NULL balio bada
 						edad = 0;
 				} catch (SQLException ignore) {
-					edad = 0;
+					edad = 0; // Zutabea ez bada existitzen
 				}
+				
+				// Helbidea lortu
 				String helbidea = null;
 				try {
 					helbidea = rs.getString("Helbidea");
 				} catch (SQLException ignore) {
 					helbidea = null;
 				}
+				
+				// Telefono zenbakia lortu
 				String tlfn = null;
 				try {
 					tlfn = rs.getString("Tlfn");
 				} catch (SQLException ignore) {
 					tlfn = null;
 				}
+				
+				// Dortsala (kamiseta zenbakia) lortu
 				int dorsal = 0;
 				try {
 					dorsal = rs.getInt("Dortsala");
@@ -164,12 +235,16 @@ public class GUIren_metodoak {
 				} catch (SQLException ignore) {
 					dorsal = 0;
 				}
+				
+				// Posizioa lortu (atezaina, aurrelaria, etab.)
 				String posizioa = null;
 				try {
 					posizioa = rs.getString("Posizioa");
 				} catch (SQLException ignore) {
 					posizioa = null;
 				}
+				
+				// Jaiotze data lortu
 				String jaiotze = null;
 				try {
 					jaiotze = rs.getString("Jaiotze_data");
@@ -177,57 +252,72 @@ public class GUIren_metodoak {
 					jaiotze = null;
 				}
 
-				// Nombre eta Abizena banatu
+				// Izen osoa banatu: lehenengo zatia izena, gainerakoa abizena
 				String nombre = "";
 				String apellido = "";
 				if (nombreCompleto != null) {
+					// Lehen zuriunea aurkitu eta zatitu (gehienez 2 zati)
 					String[] partes = nombreCompleto.trim().split(" ", 2);
 					nombre = partes[0];
 					if (partes.length > 1)
 						apellido = partes[1];
 				}
 
-				// Jokalaria sortu eta gehitu
+				// Jokalaria objektua sortu eta datuak ezarri
 				Jokalaria j = new Jokalaria();
-				j.setNana(nana);
-				j.setNombre(nombre);
-				j.setApellido(apellido);
-				j.setEdad(edad);
-				j.setHelbidea(helbidea);
-				j.setTlfn(tlfn);
-				j.setDorsal(dorsal);
-				j.setPosizioa(posizioa == null ? "" : posizioa);
-				j.setJaiotzeData(jaiotze == null ? "" : jaiotze);
-				j.setTaldea(nombreEquipo);
+				j.setNana(nana);           // NAN/DNI zenbakia
+				j.setNombre(nombre);        // Izena
+				j.setApellido(apellido);    // Abizena
+				j.setEdad(edad);            // Adina
+				j.setHelbidea(helbidea);    // Helbidea
+				j.setTlfn(tlfn);            // Telefonoa
+				j.setDorsal(dorsal);        // Kamiseta zenbakia
+				j.setPosizioa(posizioa == null ? "" : posizioa);  // Posizioa
+				j.setJaiotzeData(jaiotze == null ? "" : jaiotze); // Jaiotze data
+				j.setTaldea(nombreEquipo);  // Taldearen izena
 
+				// Jokalaria taldeari gehitu
 				equipo.addJugador(j);
 			}
 
 		} catch (SQLException e) {
-			// SQL erroreen kasuan fallback egin .ser erabiliz
+			// SQL errorea gertatu da
 			if (DEBUG)
-				e.printStackTrace();
+				e.printStackTrace(); // Debug moduan stack trace erakutsi
+			
+			// Sintaxi errorea edo zutabe ezezaguna bada
 			if (e instanceof SQLSyntaxErrorException
 					|| (e.getMessage() != null && e.getMessage().toLowerCase().contains("unknown column"))) {
+				// Erabiltzaileari jakinarazi eta .ser fitxategietatik kargatu
 				String userMsg = "SQL kontsulta errorea: datu-esquema desberdina izan daiteke (zutabea aurkitu ezina).\n"
 						+ ".ser fitxategietatik kargatuko da alternatiba gisa.\n\nXehetasuna: " + e.getMessage();
 				JOptionPane.showMessageDialog(parent, userMsg, "Error SQL - Fallback", JOptionPane.WARNING_MESSAGE);
 				List<Taldea> fromSer = loadTaldeakFromSer(parent, season);
 				return fromSer != null ? fromSer : new ArrayList<>();
 			}
+			// Beste SQL errore bat
 			JOptionPane.showMessageDialog(parent, "DB kargatze errorea: " + e.getMessage());
 		}
 
 		return listaTaldeak;
 	}
 
-	// Taldeen laguntzaile helper
+	/**
+	 * Taldea bilatu zerrendan izenaren arabera, edo berria sortu.
+	 * Metodo laguntzailea loadTaldeakFromDB-rentzat.
+	 * 
+	 * @param lista Taldeen zerrenda non bilatu
+	 * @param nombre Taldearen izena
+	 * @return Aurkitutako taldea, edo sortu berria
+	 */
 	private static Taldea buscarOcrearTaldea(List<Taldea> lista, String nombre) {
+		// Zerrenda osoan bilatu, ez kontuan hartu maiuskula/minuskula
 		for (Taldea t : lista) {
 			if (t.getNombre().equalsIgnoreCase(nombre)) {
-				return t;
+				return t; // Aurkitu da - itzuli
 			}
 		}
+		// Ez da aurkitu - talde berria sortu eta zerrendara gehitu
 		Taldea nuevo = new Taldea(nombre);
 		lista.add(nuevo);
 		return nuevo;
@@ -236,33 +326,59 @@ public class GUIren_metodoak {
 	// -------------------------------------------------------------------------
 	// FITXATEGI METODOAK (.ser) - BATERAGARRITASUN ARRAZOIAK
 	// -------------------------------------------------------------------------
+	
+	/**
+	 * Taldeak .ser fitxategi serializatutik kargatzen ditu.
+	 * Fallback metodoa gisa erabiltzen da datu-basea ez badago eskuragarri.
+	 * 
+	 * Fitxategi izen posible desberdinak saiatzen ditu:
+	 * - taldeak_<season>.ser (adib: taldeak_2025-2026.ser)
+	 * - taldeak_<season_underscore>.ser (adib: taldeak_2025_2026.ser)
+	 * - taldeak_<hasiera_urtea>.ser (adib: taldeak_2025.ser)
+	 * - taldeak.ser (defektuzko izena)
+	 * 
+	 * @param parent GUI osagai nagusia (elkarrizketetarako)
+	 * @param season Denboraldia (adib: "2025-2026")
+	 * @return Taldeen zerrenda, edo zerrenda huts bat ez bada aurkitzen
+	 */
 	public static List<Taldea> loadTaldeakFromSer(Component parent, String season) {
+		// Fitxategi izen hautagaien zerrenda sortu
 		List<String> candidates = new ArrayList<>();
 		candidates.add("taldeak_" + season + ".ser");
 		candidates.add("taldeak_" + season.replace('-', '_') + ".ser");
-		// gainera hasierako urtea ere saiatu (adib: 2025-2026 -> 2025)
+		// Hasierako urtea bakarrik saiatu (adib: 2025-2026 -> 2025)
 		if (season != null && season.length() >= 4) {
 			candidates.add("taldeak_" + season.substring(0, 4) + ".ser");
 		}
+		// Defektuzko izenak gehitu
 		candidates.add("taldeak.ser");
 		candidates.add("taldeak_2025-2026.ser");
 		candidates.add("taldeak_2026-2027.ser");
 
+		// Lan direktorioa lortu
 		String base = System.getProperty("user.dir");
+		
+		// Fitxategi bakoitza saiatu
 		for (String name : candidates) {
 			File f = new File(base, name);
 			if (!f.exists())
-				continue;
+				continue; // Fitxategia ez bada existitzen, hurrengo saiatu
+			
+			// Fitxategia irakurri ObjectInputStream erabiliz
 			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
 				Object obj = ois.readObject();
+				
+				// Objektu mota egiaztatu eta itzuli
 				if (obj instanceof List) {
-					// noinspection unchecked
+					// @SuppressWarnings: Generikoak ezin dira runtime-an egiaztatu
 					return (List<Taldea>) obj;
 				} else if (obj instanceof Taldea[]) {
+					// Array bada, List-era bihurtu
 					Taldea[] arr = (Taldea[]) obj;
 					return new ArrayList<>(Arrays.asList(arr));
 				}
 			} catch (Exception ex) {
+				// Irakurketa errorea
 				if (DEBUG)
 					ex.printStackTrace();
 				JOptionPane.showMessageDialog(parent,
@@ -274,41 +390,68 @@ public class GUIren_metodoak {
 		return new ArrayList<>();
 	}
 
+	/**
+	 * Taldeak .ser fitxategitik kargatu, denboraldia zehaztu gabe.
+	 * Overload metodoa.
+	 * 
+	 * @param parent GUI osagai nagusia
+	 * @return Taldeen zerrenda
+	 */
 	public static List<Taldea> loadTaldeakFromSer(Component parent) {
 		return loadTaldeakFromSer(parent, "");
 	}
 
 	// -------------------------------------------------------------------------
-	// GUI-k behar dituen besteko metodoak (PARTIDUAK / TEMPORADA / UPDATE kargatzea)
+	// PARTIDUAK DATU-BASETIK KARGATZEKO METODOA
+	// Tolerantea da eskema desberdinekiko - hainbat taula eta zutabe izen saiatzen ditu
 	// -------------------------------------------------------------------------
-	// Metodo honek aurrekoa ordezkatzen du osoa
-	// Ordezkatu metodo osoa GUIren_metodoak.java fitxategian
+	
+	/**
+	 * Partiduak datu-basetik kargatzen ditu, denboraldiaren arabera iragazita.
+	 * 
+	 * Metodo hau oso tolerantea da datu-base eskema desberdinekiko:
+	 * - Hainbat taula izen saiatzen ditu: partidua, partido, partiduak, partidos, match, matches, partidoa
+	 * - Hainbat zutabe izen konbinazio saiatzen ditu (euskaraz eta gazteleraz)
+	 * - Hainbat denboraldi formatu saiatzen ditu: 2025-2026, 2025_2026, 25_26, etab.
+	 * 
+	 * @param parent GUI osagai nagusia
+	 * @param season Denboraldia filtratzeko
+	 * @return Object[2]: [0]=String[] zutabe izenak, [1]=Object[][] datuak
+	 */
 	public static Object[] loadPartidosFromDB(Component parent, String season) {
+		// Datu-basea eskuragarri dagoen egiaztatu
 		if (!isDatabaseReachable()) {
 			return new Object[] { new String[0], new Object[0][0] };
 		}
 
-		// Try multiple possible matches tables and column name variants to be tolerant to different schemas
+		// Taula izen posibleak - euskara, gaztelera eta ingelesa
 		String[] tables = new String[] { "partidua", "partido", "partiduak", "partidos", "match", "matches", "partidoa" };
 
+		// Zutabe konbinazio posibleak - eskema desberdinetarako
 		String[][] columnSets = new String[][] {
+			// Gol banatuak dituen eskema (Golak_lokala eta Golak_kanpokoak)
 			{ "Data", "Ordua", "Golak_lokala", "Golak_kanpokoak", "Zelaia", "Talde_lokala", "Kampoko_taldea" },
+			// Gaztelera eskema
 			{ "data", "ordua", "goles_local", "goles_visitante", "estadio", "local", "visitante" },
 			{ "fecha", "hora", "goles_local", "goles_visitante", "estadio", "local_id", "visitante_id" },
+			// Emaitza zutabe bakarrarekin (adib: "2-1")
 			{ "Data", "Ordua", "Emaitza", "Zelaia", "Talde_lokala", "Kampoko_taldea" },
 			{ "data", "ordua", "emaitza", "zelaia", "local", "visitante" },
 			{ "fecha", "hora", "resultado", "estadio", "local_id", "visitante_id" }
 		};
 
+		// Denboraldi zutabe izen posibleak
 		String[] seasonCols = new String[] { "denboraldia", "season", "temporada", "anio", "anno" };
 
+		// Taula, zutabe eta denboraldi konbinazio guztiak saiatu
 		for (String table : tables) {
 			for (String[] cols : columnSets) {
 				for (String seasonCol : seasonCols) {
 
-					// Build query
+					// SQL kontsulta eraiki
 					StringBuilder queryBuilder = new StringBuilder("SELECT ");
 					for (int i = 0; i < cols.length; i++) {
+						// Backtick-ak erabili zutabe izenak babesteko
 						queryBuilder.append("`").append(cols[i]).append("`");
 						if (i < cols.length - 1) queryBuilder.append(", ");
 					}
@@ -316,52 +459,64 @@ public class GUIren_metodoak {
 
 					String sql = queryBuilder.toString();
 
-					// build season value variants to try
+					// Denboraldi balio posibleak sortu (formatu desberdinak)
 					List<String> seasonVariants = new ArrayList<>();
 					String s0 = (season == null) ? "" : season.trim();
-					seasonVariants.add(s0);
-					seasonVariants.add(s0.replace('-', '_'));
-					seasonVariants.add(s0.replace('-', '/'));
-					seasonVariants.add(s0.replace('_', '-'));
-					// short form 2025-2026 -> 25_26, 25-26, 2526? prefer 25_26
+					seasonVariants.add(s0);                              // 2025-2026
+					seasonVariants.add(s0.replace('-', '_'));            // 2025_2026
+					seasonVariants.add(s0.replace('-', '/'));            // 2025/2026
+					seasonVariants.add(s0.replace('_', '-'));            // Alderantziz
+					
+					// Formatu laburra: 2025-2026 -> 25_26
 					String two = s0.replaceAll("20([0-9]{2})-20([0-9]{2})","$1_$2");
 					if (!two.equals(s0)) seasonVariants.add(two);
-					// also try dropping century: 2025-2026 -> 25-26
+					
+					// 2025-2026 -> 25-26
 					String shortDash = s0.replaceAll("20([0-9]{2})-([0-9]{2})","$1-$2");
 					if (!shortDash.equals(s0)) seasonVariants.add(shortDash);
-					// add underscore variant of short
+					
+					// 25-26 -> 25_26
 					if (shortDash.contains("-")) seasonVariants.add(shortDash.replace('-', '_'));
-					// unique
+					
+					// Errepikatuak kendu, ordena mantenduz
 					LinkedHashSet<String> svset = new LinkedHashSet<>(seasonVariants);
 					seasonVariants = new ArrayList<>(svset);
 
+					// Denboraldi balio bakoitza saiatu
 					for (String seasonValue : seasonVariants) {
+						// Saiakera erregistratu diagnostikorako
 						recordSqlAttempt("Trying SQL: " + sql + " with seasonValue=" + seasonValue);
 
 						try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 								PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+							// Denboraldi parametroa ezarri
 							stmt.setString(1, seasonValue);
 
 							try (ResultSet rs = stmt.executeQuery()) {
+								// Emaitzak zerrenda batean bildu
 								List<Object[]> rows = new ArrayList<>();
 								while (rs.next()) {
 									Object[] row = new Object[cols.length];
 									for (int i = 0; i < cols.length; i++) row[i] = rs.getObject(i + 1);
 									rows.add(row);
 								}
+								// Arraietara bihurtu eta itzuli
 								Object[][] data = rows.toArray(new Object[0][]);
 								return new Object[] { cols, data };
 							}
 
 						} catch (SQLException ex) {
+							// Errorea erregistratu
 							recordSqlAttempt("SQL failed: " + ex.getMessage());
 							String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
+							
+							// Taula edo zutabea ez bada existitzen, hurrengo konbinazioa saiatu
 							if (msg.contains("doesn't exist") || msg.contains("unknown column") || msg.contains("unknown table")) {
-								// try next seasonValue
 								if (DEBUG) System.out.println("SQL variant failed: " + sql + " -> " + ex.getMessage());
 								continue;
 							}
+							// Beste errore bat - itzuli
 							if (DEBUG) ex.printStackTrace();
 							return new Object[] { new String[0], new Object[0][0] };
 						}
@@ -370,26 +525,51 @@ public class GUIren_metodoak {
 			}
 		}
 
+		// Ez da konbinazio egokia aurkitu - erabiltzaileari jakinarazi
 		JOptionPane.showMessageDialog(parent, "Ez dira 'Golak_lokala' edo 'Golak_kanpokoak' zutabeak aurkitu 'partidua' taulan.", "DB Error", JOptionPane.WARNING_MESSAGE);
 		return new Object[] { new String[0], new Object[0][0] };
 	}
 
+	// -------------------------------------------------------------------------
+	// DENBORALDIAK DATU-BASETIK KARGATZEKO METODOA
+	// -------------------------------------------------------------------------
+	
+	/**
+	 * Eskuragarri dauden denboraldiak datu-basetik kargatzen ditu.
+	 * 
+	 * Metodo honek:
+	 * 1. Lehenik DB konexioa egiaztatzen du
+	 * 2. Hainbat taula eta zutabe izen konbinazio saiatzen ditu
+	 * 3. Huts egiten badu, .ser fitxategietatik kargatzen du (fallback)
+	 * 
+	 * @param parent GUI osagai nagusia
+	 * @return Denboraldien zerrenda (adib: ["2025-2026", "2024-2025"])
+	 */
 	public static List<String> loadSeasonsFromDB(Component parent) {
-		// Lehenik DB probe egin
+		// Lehenik DB eskuragarritasuna egiaztatu
 		if (!isDatabaseReachable()) {
+			// Erabiltzaileari behin bakarrik jakinarazi
 			if (!dbNotified) {
 				dbNotified = true;
 				JOptionPane.showMessageDialog(parent,
 						"Cannot connect to database server at " + URL + ".\nLoading seasons from local files.",
 						"DB Unreachable", JOptionPane.WARNING_MESSAGE);
 			}
+			// Fallback: .ser fitxategietatik kargatu
 			List<String> fromFiles = loadSeasonsFromSerFiles();
 			return fromFiles;
 		}
+		
+		// Emaitza zerrenda
 		List<String> seasons = new ArrayList<>();
+		
+		// Taula izen posibleak
 		String[] tables = new String[] { "partidua", "partido", "partiduak" };
+		
+		// Denboraldi zutabe izen posibleak
 		String[] seasonCols = new String[] { "temporada", "denboraldia", "season", "anno", "anio" };
 
+		// JDBC Driver kargatu saiatu
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException cnfe) {
@@ -401,15 +581,20 @@ public class GUIren_metodoak {
 			return seasons;
 		}
 
+		// Taula eta zutabe konbinazio guztiak saiatu
 		for (String table : tables) {
 			for (String seasonCol : seasonCols) {
+				// SQL kontsulta: denboraldi bakarrak lortu
 				String sql = String.format(
-						"SELECT DISTINCT `%s` AS s FROM `%s` WHERE `%s` IS NOT NULL ORDER BY `%s` DESC", seasonCol,
-						table, seasonCol, seasonCol);
+						"SELECT DISTINCT `%s` AS s FROM `%s` WHERE `%s` IS NOT NULL ORDER BY `%s` DESC", 
+						seasonCol, table, seasonCol, seasonCol);
+				
 				try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
-					// Validate that the table and column exist to avoid SQLSyntaxErrorException
+					// Taula eta zutabea existitzen diren egiaztatu metadata bidez
 					try {
 						DatabaseMetaData md = conn.getMetaData();
+						
+						// Taula existitzen den egiaztatu
 						boolean tableExists = false;
 						try (ResultSet tRs = md.getTables(conn.getCatalog(), null, table, new String[] { "TABLE" })) {
 							while (tRs.next()) {
@@ -421,10 +606,11 @@ public class GUIren_metodoak {
 							}
 						}
 						if (!tableExists) {
-							// try next table
+							// Taula ez da existitzen, hurrengo saiatu
 							continue;
 						}
 
+						// Zutabea existitzen den egiaztatu
 						boolean colExists = false;
 						try (ResultSet cRs = md.getColumns(conn.getCatalog(), null, table, seasonCol)) {
 							while (cRs.next()) {
@@ -436,24 +622,26 @@ public class GUIren_metodoak {
 							}
 						}
 						if (!colExists) {
-							// try next column name
+							// Zutabea ez da existitzen, hurrengo saiatu
 							continue;
 						}
 					} catch (SQLException metaEx) {
 						if (DEBUG)
 							metaEx.printStackTrace();
-						// If metadata check fails for some reason, fall back to attempting the query
-						// below
+						// Metadata huts egiten badu, kontsulta zuzenean saiatu
 					}
 
-					// If we reach here, table and column appear to exist; run the query
-					try (PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+					// Taula eta zutabea existitzen dira - kontsulta exekutatu
+					try (PreparedStatement pst = conn.prepareStatement(sql); 
+						 ResultSet rs = pst.executeQuery()) {
 
+						// Emaitzak prozesatu
 						while (rs.next()) {
 							String s = rs.getString("s");
 							if (s != null && !s.trim().isEmpty())
 								seasons.add(s);
 						}
+						// Emaitzak aurkitu badira, itzuli
 						if (!seasons.isEmpty())
 							return seasons;
 
@@ -461,11 +649,12 @@ public class GUIren_metodoak {
 						if (DEBUG)
 							ex.printStackTrace();
 						String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
+						// Zutabe/taula ezezaguna bada, hurrengo konbinazioa saiatu
 						if (msg.contains("unknown column") || msg.contains("doesn't exist")
 								|| msg.contains("unknown table")) {
-							// try next combination
 							continue;
 						}
+						// Beste errore bat - fallback egin
 						JOptionPane.showMessageDialog(parent,
 								"Error loading seasons from DB: " + ex.getMessage()
 										+ "\nFalling back to local serialized files.",
@@ -481,8 +670,9 @@ public class GUIren_metodoak {
 					String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
 					if (msg.contains("unknown column") || msg.contains("doesn't exist")
 							|| msg.contains("unknown table")) {
-						continue; // try next combination
+						continue; // Hurrengo konbinazioa saiatu
 					}
+					// Beste errore bat - fallback egin
 					JOptionPane.showMessageDialog(parent,
 							"Error loading seasons from DB: " + ex.getMessage()
 									+ "\nFalling back to local serialized files.",
@@ -497,34 +687,66 @@ public class GUIren_metodoak {
 		return seasons;
 	}
 
-	// Fallback: scan current directory for taldeak_<season>.ser files and extract
-	// season names
+	// -------------------------------------------------------------------------
+	// DENBORALDIAK FITXATEGIETATIK KARGATZEKO (FALLBACK)
+	// -------------------------------------------------------------------------
+	
+	/**
+	 * Denboraldiak .ser fitxategietatik kargatzen ditu.
+	 * Fallback metodoa - datu-basea eskuraezin dagoenean erabiltzen da.
+	 * 
+	 * Fitxategi izenak eskanatzen ditu: taldeak_<season>.ser
+	 * eta season zatia ateratzen du.
+	 * 
+	 * @return Denboraldien zerrenda, berrienak lehenik ordenatuta
+	 */
 	private static List<String> loadSeasonsFromSerFiles() {
 		List<String> list = new ArrayList<>();
+		
+		// Lan direktorioa lortu
 		String base = System.getProperty("user.dir");
 		File dir = new File(base);
+		
+		// taldeak_*.ser fitxategiak bilatu
 		File[] files = dir.listFiles(
 				(d, name) -> name.toLowerCase().startsWith("taldeak_") && name.toLowerCase().endsWith(".ser"));
+		
 		if (files == null)
 			return list;
+		
+		// Fitxategi bakoitzetik denboraldia atera
 		for (File f : files) {
 			String name = f.getName();
-			// name like taldeak_2025-2026.ser or taldeak_2026.ser
+			// Adib: taldeak_2025-2026.ser -> 2025-2026
 			String core = name.substring("taldeak_".length(), name.length() - ".ser".length());
 			if (!core.trim().isEmpty()) {
 				if (!list.contains(core))
 					list.add(core);
 			}
 		}
-		// sort descending-like if seasons like 2026-2027
+		
+		// Berrienak lehenik ordenatu
 		list.sort(Comparator.reverseOrder());
 		return list;
 	}
 
-	// Detect sailkapena_<suffix> tables and return normalized season strings for
-	// the UI
+	// -------------------------------------------------------------------------
+	// SAILKAPENA TAULAK DETEKTATZEKO METODOA
+	// -------------------------------------------------------------------------
+	
+	/**
+	 * Datu-basean dauden sailkapena_* taulak detektatzen ditu
+	 * eta denboraldi normalizatuak itzultzen ditu.
+	 * 
+	 * Adibidez: sailkapena_25_26 taula -> "2025-2026" itzultzen du
+	 * 
+	 * @param parent GUI osagai nagusia
+	 * @return Denboraldien zerrenda normalizatuta
+	 */
 	public static List<String> getAvailableSailkapenaSeasons(Component parent) {
 		List<String> out = new ArrayList<>();
+		
+		// Driver kargatu
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -533,7 +755,7 @@ public class GUIren_metodoak {
 			return out;
 		}
 
-		// Probe DB before attempting queries
+		// DB eskuragarritasuna egiaztatu
 		if (!isDatabaseReachable()) {
 			if (!dbNotified) {
 				dbNotified = true;
@@ -544,18 +766,22 @@ public class GUIren_metodoak {
 			return out;
 		}
 
+		// information_schema kontsultatu sailkapena_* taulak bilatzeko
 		String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? AND table_name LIKE 'sailkapena_%'";
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement pst = conn.prepareStatement(sql)) {
 
-			// assume database name is in URL path; use 'eskubaloi'
+			// Datu-base izena ezarri
 			pst.setString(1, "eskubaloi");
+			
 			try (ResultSet rs = pst.executeQuery()) {
 				while (rs.next()) {
 					String tbl = rs.getString(1);
 					if (tbl == null)
 						continue;
+					// sailkapena_ aurrizkia kendu
 					String suf = tbl.substring("sailkapena_".length());
+					// Denboraldia normalizatu (adib: 25_26 -> 2025-2026)
 					String display = normalizeSeasonFromSuffix(suf);
 					if (display != null && !out.contains(display))
 						out.add(display);
@@ -566,29 +792,47 @@ public class GUIren_metodoak {
 				ex.printStackTrace();
 		}
 
-		// sort newest first if they look like years
+		// Berrienak lehenik ordenatu
 		out.sort(Comparator.reverseOrder());
 		return out;
 	}
 
+	/**
+	 * Taula atzizkitik denboraldi formatu normalizatua lortu.
+	 * 
+	 * Adibidez:
+	 * - "25_26" -> "2025-2026"
+	 * - "2025_2026" -> "2025-2026"
+	 * 
+	 * @param suf Taularen atzizkia
+	 * @return Denboraldia formatu normalizatuan
+	 */
 	private static String normalizeSeasonFromSuffix(String suf) {
 		if (suf == null)
 			return null;
+		
+		// Karaktere ez-zenbakizkoak kendu
 		String t = suf.replaceAll("[^0-9_\\-]", "_");
 		t = t.replace('-', '_');
+		
+		// Zatitu _ karakterearen bidez
 		String[] parts = t.split("_");
+		
 		if (parts.length >= 2) {
 			String a = parts[0];
 			String b = parts[1];
+			
+			// 2 digitukoak badira (25_26), mendea gehitu
 			if (a.length() == 2 && b.length() == 2) {
 				return "20" + a + "-" + "20" + b;
 			}
+			// 4 digitukoak badira (2025_2026), marratxoa jarri
 			if (a.length() == 4 && b.length() == 4) {
 				return a + "-" + b;
 			}
-			// fallback: join with -
-			return a + "-" + b;
 		}
+		
+		// Ezin bada normalizatu, azpimarra marratxoarekin ordezkatu
 		return suf.replace('_', '-');
 	}
 
@@ -643,8 +887,10 @@ public class GUIren_metodoak {
 					if (i > 1)
 						sb.append(", ");
 					sb.append("`").append(cols[i]).append("` = ?");
+
 				}
 				sb.append(" WHERE `").append(cols[0]).append("` = ?");
+
 				String sql = sb.toString();
 
 				try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -765,6 +1011,7 @@ public class GUIren_metodoak {
                     if (!first) sb.append(", ");
                     first = false;
                     sb.append("`").append(colNames[idx]).append("` = ?");
+
                 }
                 sb.append(" WHERE `").append(colNames[whereColIndex]).append("` = ?");
 
@@ -847,6 +1094,7 @@ public class GUIren_metodoak {
                         if (!first) sb.append(", ");
                         first = false;
                         sb.append("`").append(colNames[idx]).append("` = ?");
+
                     }
                     sb.append(" WHERE `").append(colNames[idxDate]).append("` = ? AND `")
                       .append(colNames[idxTime]).append("` = ? AND `").append(colNames[idxLocal]).append("` = ? AND `").append(colNames[idxVisit]).append("` = ?");
@@ -1235,7 +1483,7 @@ public class GUIren_metodoak {
 							pst2.setString(2, j.getHelbidea());
 							pst2.setString(3, j.getTlfn());
 							pst2.setString(4, nana);
-							pst2.executeUpdate();
+						 pst2.executeUpdate();
 						} catch (SQLException ex2) {
 							if (DEBUG) ex2.printStackTrace();
 						}
@@ -1395,11 +1643,11 @@ public class GUIren_metodoak {
 
         if (cols.length == 0) return false;
 
-        // Possible column name variants
-        Set<String> localNameCandidates = new HashSet<>(Arrays.asList("Talde_lokala","Taldea_lokala","TaldeLokala","local","local_name","local_id","kod_lokala","Talde_lokala","local_team","Talde_lokala","Talde_lokala"));
-        Set<String> visitNameCandidates = new HashSet<>(Arrays.asList("Kampoko_taldea","KampokoTaldea","Kampoko_taldea","visitante","visitante_name","visitante_id","kod_kanpokoa","away","away_team","Kampoko_taldea"));
-        Set<String> golsLocalCandidates = new HashSet<>(Arrays.asList("Golak_lokala","Goles_Local","goles_local","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala","Golak_lokala"));
-        Set<String> golsVisitCandidates = new HashSet<>(Arrays.asList("Golak_kanpokoak","Goles_Visitante","goles_visitante","Golak_kanpokoak"));
+        // Possible column name variants - errepikaturik kendu
+        Set<String> localNameCandidates = new HashSet<>(Arrays.asList("Talde_lokala","Taldea_lokala","TaldeLokala","local","local_name","local_id","kod_lokala","local_team"));
+        Set<String> visitNameCandidates = new HashSet<>(Arrays.asList("Kampoko_taldea","KampokoTaldea","visitante","visitante_name","visitante_id","kod_kanpokoa","away","away_team"));
+        Set<String> golsLocalCandidates = new HashSet<>(Arrays.asList("Golak_lokala","Goles_Local","goles_local","gf_local","gol_local"));
+        Set<String> golsVisitCandidates = new HashSet<>(Arrays.asList("Golak_kanpokoak","Goles_Visitante","goles_visitante","gf_visitante","gol_visitante"));
         Set<String> resultCandidates = new HashSet<>(Arrays.asList("Emaitza","emaitza","resultado","resultado_final","Resultado"));
 
         Map<String, Integer> colIndex = new HashMap<>();
@@ -1498,7 +1746,7 @@ public class GUIren_metodoak {
         String suf = season.trim(); suf = suf.replaceAll("20([0-9]{2})", "$1"); suf = suf.replace("-", "_");
         String tableName = "sailkapena_" + suf;
 
-        // Write to DB: create table if not exists, then delete and insert rows
+        // Write to DB: create table if needed, then delete and insert rows
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException cnfe) {
@@ -1509,20 +1757,11 @@ public class GUIren_metodoak {
         }
 
         // Quote column identifiers in CREATE to be robust against reserved words and ensure columns are created with expected names
-        String createSql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` ("
+        String createSql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` (" 
                 + "`team` VARCHAR(128) PRIMARY KEY, `PJ` INT, `G` INT, `E` INT, `P` INT, `GF` INT, `GA` INT, `GD` INT, `PTS` INT)";
 
          try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
              try (PreparedStatement ps = conn.prepareStatement(createSql)) { ps.execute(); }
-
-             // Ensure expected columns exist (if table existed with different schema)
-             try {
-                 ensureSailkapenaColumns(conn, tableName);
-             } catch (SQLException se) {
-                 // record and continue; CREATE should have produced correct columns but be tolerant
-                 recordSqlAttempt("ensureSailkapenaColumns failed: " + se.getMessage());
-                 if (DEBUG) se.printStackTrace();
-             }
 
              // clear existing
              try (PreparedStatement ps = conn.prepareStatement("DELETE FROM `" + tableName + "`")) { ps.executeUpdate(); }
@@ -1553,49 +1792,162 @@ public class GUIren_metodoak {
         }
     }
 
-    // Ensure the sailkapena table has the expected columns; add missing ones.
-    private static void ensureSailkapenaColumns(Connection conn, String tableName) throws SQLException {
-        Map<String, String> expected = new LinkedHashMap<>();
-        expected.put("team", "VARCHAR(128)");
-        expected.put("PJ", "INT");
-        expected.put("G", "INT");
-        expected.put("E", "INT");
-        expected.put("P", "INT");
-        expected.put("GF", "INT");
-        expected.put("GA", "INT");
-        expected.put("GD", "INT");
-        expected.put("PTS", "INT");
+    // -------------------------------------------------------------------------
+    // SAILKAPENA TAULA (JTable model) DB-ra gordetzeko
+    // -------------------------------------------------------------------------
+    /**
+     * JTable-ko DefaultTableModel-etik sailkapen taula DB-ra gordetzen du.
+     * Denboraldiaren arabera sailkapena_<season> taula erabiliko du (adib. "2024-2025" -> sailkapena_2024_2025).
+     */
+    public static boolean saveSailkapenaTableToDB(java.awt.Component parent, String season, DefaultTableModel model) {
+        if (season == null || season.trim().isEmpty() || model == null) return false;
 
-        // collect existing columns (lowercase)
-        Set<String> existing = new HashSet<>();
-        try (PreparedStatement ps = conn.prepareStatement("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema = ? AND table_name = ?")) {
-            String db = conn.getCatalog();
-            ps.setString(1, db == null ? "eskubaloi" : db);
-            ps.setString(2, tableName);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    String c = rs.getString(1);
-                    if (c != null) existing.add(c.toLowerCase());
-                }
+        if (!isDatabaseReachable()) {
+            if (!dbNotified) {
+                dbNotified = true;
+                JOptionPane.showMessageDialog(parent,
+                        "Cannot connect to database server at " + URL + ".\nCannot save classification.",
+                        "DB Unreachable", JOptionPane.WARNING_MESSAGE);
             }
+            return false;
         }
 
-        for (Map.Entry<String, String> e : expected.entrySet()) {
-            if (!existing.contains(e.getKey().toLowerCase())) {
-                String sql = "ALTER TABLE `" + tableName + "` ADD COLUMN `" + e.getKey() + "` " + e.getValue();
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.execute();
-                    recordSqlAttempt("Added missing column with: " + sql);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException cnfe) {
+            JOptionPane.showMessageDialog(parent,
+                    "MySQL JDBC Driver not found. Cannot save classification. Add mysql-connector-java.jar to classpath.",
+                    "Driver missing", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        // normalize season -> table suffix
+        String suf = season.trim().replace('-', '_');
+        String tableName = "sailkapena_" + suf;
+
+        // detect column names in model (tolerant)
+        int colCount = model.getColumnCount();
+        if (colCount <= 0) return false;
+
+        // map available columns
+        java.util.Map<String, Integer> idx = new java.util.HashMap<>();
+        for (int i = 0; i < colCount; i++) {
+            String n = String.valueOf(model.getColumnName(i));
+            if (n != null) idx.put(n.toLowerCase(), i);
+        }
+
+        java.util.function.Function<String[], Integer> pick = (cands) -> {
+            for (String c : cands) {
+                Integer v = idx.get(c.toLowerCase());
+                if (v != null) return v;
+            }
+            // fallback: contains
+            for (String k : idx.keySet()) {
+                for (String c : cands) {
+                    if (k.contains(c.toLowerCase())) return idx.get(k);
                 }
             }
+            return null;
+        };
+
+        Integer iTeam = pick.apply(new String[] {"team","taldea","talde","equipo","izena","nombre"});
+        Integer iPJ = pick.apply(new String[] {"pj","played","partidak"});
+        Integer iG  = pick.apply(new String[] {"g","w","wins","irabazi"});
+        Integer iE  = pick.apply(new String[] {"e","d","draw","berd"});
+        Integer iP  = pick.apply(new String[] {"p","l","loss","galdu"});
+        Integer iGF = pick.apply(new String[] {"gf","golak","for"});
+        Integer iGA = pick.apply(new String[] {"ga","against","kontra"});
+        Integer iGD = pick.apply(new String[] {"gd","diff","diferentzia"});
+        Integer iPTS = pick.apply(new String[] {"pts","points","puntu"});
+
+        if (iTeam == null) {
+            JOptionPane.showMessageDialog(parent, "Ezin da 'team/taldea' zutabea aurkitu sailkapen taulan.", "Errorea",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        String createSql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` (" +
+                "`team` VARCHAR(128) PRIMARY KEY, `PJ` INT, `G` INT, `E` INT, `P` INT, `GF` INT, `GA` INT, `GD` INT, `PTS` INT)";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement create = conn.prepareStatement(createSql)) {
+                create.execute();
+            }
+            try (PreparedStatement del = conn.prepareStatement("DELETE FROM `" + tableName + "`")) {
+                del.executeUpdate();
+            }
+
+            String insSql = "INSERT INTO `" + tableName + "` (`team`,`PJ`,`G`,`E`,`P`,`GF`,`GA`,`GD`,`PTS`) VALUES (?,?,?,?,?,?,?,?,?)";
+            try (PreparedStatement ins = conn.prepareStatement(insSql)) {
+                for (int r = 0; r < model.getRowCount(); r++) {
+                    Object teamObj = model.getValueAt(r, iTeam);
+                    String team = teamObj == null ? "" : String.valueOf(teamObj).trim();
+                    if (team.isEmpty() || "Ez da sailkapenik aurkitu.".equalsIgnoreCase(team)) continue;
+
+                    ins.setString(1, team);
+                    ins.setInt(2, toIntSafe(model, r, iPJ));
+                    ins.setInt(3, toIntSafe(model, r, iG));
+                    ins.setInt(4, toIntSafe(model, r, iE));
+                    ins.setInt(5, toIntSafe(model, r, iP));
+                    ins.setInt(6, toIntSafe(model, r, iGF));
+                    ins.setInt(7, toIntSafe(model, r, iGA));
+                    int gd = (iGD != null) ? toIntSafe(model, r, iGD) : (toIntSafe(model, r, iGF) - toIntSafe(model, r, iGA));
+                    ins.setInt(8, gd);
+                    int pts = (iPTS != null) ? toIntSafe(model, r, iPTS) : (toIntSafe(model, r, iG) * 2 + toIntSafe(model, r, iE));
+                    ins.setInt(9, pts);
+                    ins.addBatch();
+                }
+                ins.executeBatch();
+            }
+
+            conn.commit();
+            return true;
+        } catch (SQLException ex) {
+            recordSqlAttempt("saveSailkapenaTableToDB failed: " + ex.getMessage());
+            if (DEBUG) ex.printStackTrace();
+            try {
+                JOptionPane.showMessageDialog(parent, "Ezin izan da sailkapena gorde DB-n: " + ex.getMessage(),
+                        "DB Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ignored) {}
+            return false;
         }
     }
 
-    private static Integer toInt(Object o) {
-        if (o == null) return null;
+    private static int toIntSafe(DefaultTableModel model, int row, Integer col) {
+        if (col == null) return 0;
         try {
-            if (o instanceof Number) return ((Number)o).intValue();
-            return Integer.parseInt(String.valueOf(o).trim());
-        } catch (Exception e) { return null; }
+            Object v = model.getValueAt(row, col);
+            return toInt(v);
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
+    /**
+     * Object bat (Number/String) int-era bihurtu, ezin bada 0.
+     */
+    private static int toInt(Object v) {
+        if (v == null) return 0;
+        if (v instanceof Number) return ((Number) v).intValue();
+        String s = String.valueOf(v).trim();
+        if (s.isEmpty()) return 0;
+        // remove non-numeric separators (e.g. "12,0")
+        s = s.replace(',', '.');
+        // keep leading sign and digits
+        try {
+            if (s.contains(".")) {
+                double d = Double.parseDouble(s);
+                return (int) Math.round(d);
+            }
+            return Integer.parseInt(s);
+        } catch (Exception ex) {
+            // extract first integer found
+            try {
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("-?\\d+").matcher(s);
+                if (m.find()) return Integer.parseInt(m.group());
+            } catch (Exception ignored) {}
+            return 0;
+        }
     }
 }
