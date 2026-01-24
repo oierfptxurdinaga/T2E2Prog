@@ -1,0 +1,258 @@
+[2026-01-20 12:11:11] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-20 12:11:12] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-20 12:11:13] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-20 12:11:17] [INFO] Leihoa irekita: Taldeak
+[2026-01-20 12:11:32] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-20 12:11:35] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-20 12:11:41] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-20 12:11:41] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-20 12:11:42] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-20 12:11:49] [EKINTZA] Jokalaria editatua [Aloña Mendi]: Josean Barrenetxea Uriarte
+[2026-01-20 12:34:46] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-20 12:34:49] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-20 12:34:49] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-20 12:34:51] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-20 12:34:54] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-20 12:34:54] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-20 12:34:55] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-20 13:49:54] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-20 13:49:55] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-20 13:49:55] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-20 13:49:56] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 12:49:24] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 12:49:30] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 12:49:30] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 12:49:31] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 12:49:48] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 12:49:52] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 12:49:53] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 12:49:53] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 12:49:54] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 12:49:57] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 12:50:05] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 12:50:14] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 12:50:16] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 12:50:24] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 12:50:25] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 12:50:25] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 12:50:27] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 12:50:35] [ABISUA] Arbitroa saioa hasi saiakera okerra - pasahitz okerra
+[2026-01-22 12:50:44] [ABISUA] Arbitroa saioa hasi saiakera okerra - pasahitz okerra
+[2026-01-22 12:50:49] [ABISUA] Arbitroa saioa hasi saiakera okerra - pasahitz okerra
+[2026-01-22 12:50:57] [SAIOA_HASI] Erabiltzailea sartu da: Arbitroa
+[2026-01-22 12:50:57] [INFO] Leihoa irekita: Arbitroa
+[2026-01-22 12:50:58] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-22 12:51:16] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-22 12:55:27] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 12:55:35] [SAIOA_HASI] Erabiltzailea sartu da: Arbitroa
+[2026-01-22 12:55:35] [INFO] Leihoa irekita: Arbitroa
+[2026-01-22 12:55:36] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-22 12:55:55] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-22 13:10:43] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 13:10:44] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 13:10:44] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 13:10:45] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 13:10:48] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 13:10:50] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 13:10:56] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 13:11:03] [SAIOA_HASI] Erabiltzailea sartu da: Arbitroa
+[2026-01-22 13:11:03] [INFO] Leihoa irekita: Arbitroa
+[2026-01-22 13:11:04] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 13:11:07] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-22 13:11:11] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 13:11:24] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 13:11:29] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-22 13:11:29] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-22 13:11:29] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-22 13:12:52] [EKINTZA] Jokalaria gehitua [Aloña Mendi]: Julian Barrena Etxebarria
+[2026-01-22 13:13:17] [EKINTZA] Aldaketak gordeta: Jokalariak/Taldeak - Denboraldia: 25-26
+[2026-01-22 13:13:18] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-22 13:13:44] [EKINTZA] Jokalaria editatua [Aloña Mendi]: Josian Barrenetxea Uriarte
+[2026-01-22 13:13:47] [EKINTZA] Aldaketak gordeta: Jokalariak/Taldeak - Denboraldia: 25-26
+[2026-01-22 13:13:49] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-22 13:14:38] [EKINTZA] Jokalaria gehitua [Aloña Mendi]: sdfds sdfds
+[2026-01-22 13:14:42] [EKINTZA] Jokalaria ezabatua [Aloña Mendi]: sdfds sdfds
+[2026-01-22 13:14:50] [EKINTZA] Jokalaria traspasatua: Josian Barrenetxea Uriarte [Aloña Mendi] -> [Amezti Zarautz]
+[2026-01-22 13:15:11] [EKINTZA] Jokalaria traspasatua: Josian Barrenetxea Uriarte [Amezti Zarautz] -> [Aloña Mendi]
+[2026-01-22 13:15:19] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-22 14:06:11] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:06:12] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 14:06:12] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 14:06:13] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 14:06:16] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 14:06:18] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 14:06:24] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:12:30] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:12:31] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 14:12:31] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 14:12:32] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 14:12:40] [INFO] Leihoa irekita: Taldeak
+[2026-01-22 14:12:42] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 14:12:45] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:12:52] [SAIOA_HASI] Erabiltzailea sartu da: Arbitroa
+[2026-01-22 14:12:52] [INFO] Leihoa irekita: Arbitroa
+[2026-01-22 14:12:53] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-22 14:13:07] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-22 14:20:30] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:20:34] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-22 14:20:34] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-22 14:20:35] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-22 14:20:51] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-22 14:21:02] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-22 14:22:27] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:22:28] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-22 14:22:28] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-22 14:22:29] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-22 14:22:32] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-22 14:22:38] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-22 14:22:43] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-22 14:22:43] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-22 14:22:43] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-22 14:22:48] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-22 14:23:10] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-22 14:23:21] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:15:46] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:15:52] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:15:52] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:15:53] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:16:04] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:19:52] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:19:57] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:19:57] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:19:58] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:20:08] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:22:46] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:22:51] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:22:51] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:22:51] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:23:15] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:25:34] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:25:35] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 10:25:35] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 10:25:36] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 10:25:40] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:25:47] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:25:47] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:25:47] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:25:59] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:26:03] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:27:55] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:27:56] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 10:27:56] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 10:27:57] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 10:28:00] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:28:06] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:28:06] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:28:07] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:28:15] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:32:44] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:32:51] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:32:51] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:32:51] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:33:00] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-23 10:33:10] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:33:17] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:33:17] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:33:18] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:33:37] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 10:34:18] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:34:19] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 10:34:19] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 10:34:20] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-23 10:35:36] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:35:42] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:35:42] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:35:43] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:35:52] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:35:53] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 10:35:53] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 10:35:53] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 10:41:14] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:41:19] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:41:19] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 10:41:20] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 10:41:24] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-23 10:41:30] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:41:32] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 10:41:32] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 10:41:34] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-23 10:43:26] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:51:36] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:51:36] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 10:51:36] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 10:51:43] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 10:51:47] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 10:51:47] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 11:37:21] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:37:23] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 11:37:23] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 11:37:24] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 11:37:28] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-23 11:37:31] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:37:35] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 11:37:35] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 11:37:36] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 11:37:39] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-23 11:37:46] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:38:02] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:38:07] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 11:38:07] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 11:38:08] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 11:38:16] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 11:38:24] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-23 11:43:39] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:43:45] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 11:43:45] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 11:43:46] [INFO] Leihoa irekita: Kudeatu Klasifikazioa
+[2026-01-23 11:43:50] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 11:43:52] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 11:43:53] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:43:54] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 11:43:54] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 11:43:54] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 11:46:41] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:46:42] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 11:46:42] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 11:46:43] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 11:46:44] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:46:46] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 11:46:46] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 11:46:47] [INFO] Leihoa irekita: Klasifikazioa
+[2026-01-23 11:47:30] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:47:31] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 11:47:31] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 11:47:32] [INFO] Leihoa irekita: Taldeak
+[2026-01-23 11:47:37] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 11:47:41] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-23 11:47:50] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:47:53] [INFO] Leihoa irekita: Taldeak
+[2026-01-23 11:47:55] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 11:48:00] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 11:48:00] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 11:48:03] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 11:48:06] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-23 11:48:12] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 11:48:21] [ERROREA] Partidua eguneratu ezin izan da - 25-26
+[2026-01-23 12:04:32] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 12:04:33] [SAIOA_HASI] Erabiltzailea sartu da: Erabiltzailea
+[2026-01-23 12:04:33] [INFO] Leihoa irekita: Erabiltzailea
+[2026-01-23 12:04:34] [INFO] Leihoa irekita: Taldeak
+[2026-01-23 12:04:40] [INFO] Leihoa irekita: Jaurdunaldiak
+[2026-01-23 12:04:44] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-23 12:04:49] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 12:04:55] [ABISUA] Arbitroa saioa hasi saiakera okerra - pasahitz okerra
+[2026-01-23 12:05:00] [SAIOA_HASI] Erabiltzailea sartu da: Arbitroa
+[2026-01-23 12:05:00] [INFO] Leihoa irekita: Arbitroa
+[2026-01-23 12:05:01] [INFO] Leihoa irekita: Taldeak
+[2026-01-23 12:05:04] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 12:05:06] [INFO] Leihoa irekita: Klasifikazioa/Sailkapena
+[2026-01-23 12:05:07] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 12:05:12] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 12:05:12] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 12:05:13] [INFO] Leihoa irekita: Kudeatu Jokalariak/Taldeak
+[2026-01-23 12:05:22] [INFO] Leihoa irekita: Kudeatu Jaurdunaldiak
+[2026-01-23 12:05:24] [INFO] Leihoa irekita: Kudeatu Klasifikazioa/Sailkapena
+[2026-01-23 12:06:05] [INFO] Aplikazioa abiarazita - Saio hasierako leihoa irekita
+[2026-01-23 12:06:09] [SAIOA_HASI] Erabiltzailea sartu da: Koordinatzailea
+[2026-01-23 12:06:09] [INFO] Leihoa irekita: Koordinatzailea
+[2026-01-23 12:06:10] [INFO] Leihoa irekita: Kudeatu Klasifikazioa/Sailkapena
